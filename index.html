@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0b0612">
+    <meta name="melody-version" content="3">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="assets/icon-192.png">
+    <title>Melody Riot: School Days</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Рисунки для нот: сакура и три значка нот -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+        <radialGradient id="skShine" cx="50%" cy="50%" r="50%">
+            <stop offset="0" stop-color="#fff" stop-opacity="0.9"/>
+            <stop offset="0.5" stop-color="#fff" stop-opacity="0.35"/>
+            <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+        </radialGradient>
+        <path id="petal" d="M50 52C37 42 28 22 38 9C43 3 48 6 50 13C52 6 57 3 62 9C72 22 63 42 50 52Z"/>
+        <symbol id="sakura" viewBox="0 0 100 100">
+            <use href="#petal"/>
+            <use href="#petal" transform="rotate(72 50 50)"/>
+            <use href="#petal" transform="rotate(144 50 50)"/>
+            <use href="#petal" transform="rotate(216 50 50)"/>
+            <use href="#petal" transform="rotate(288 50 50)"/>
+            <circle cx="50" cy="50" r="46" fill="url(#skShine)" stroke="none"/>
+            <circle cx="50" cy="50" r="25" fill="#fff" stroke="none"/>
+        </symbol>
+        <symbol id="n1" viewBox="0 0 24 24">
+            <g fill="#4b1f6f"><ellipse cx="9" cy="18.5" rx="4.6" ry="3.3" transform="rotate(-24 9 18.5)"/><rect x="12.4" y="3" width="2.1" height="16" rx="1"/></g>
+        </symbol>
+        <symbol id="n2" viewBox="0 0 24 24">
+            <g fill="#4b1f6f"><ellipse cx="9" cy="18.5" rx="4.6" ry="3.3" transform="rotate(-24 9 18.5)"/><rect x="12.4" y="3" width="2.1" height="16" rx="1"/><path d="M14.4 3C14.6 8.5 21.5 9.6 20 16.3C19.6 12.6 17.2 11 14.4 10.6Z"/></g>
+        </symbol>
+        <symbol id="n3" viewBox="0 0 24 24">
+            <g fill="#4b1f6f"><ellipse cx="6.8" cy="18.8" rx="3.9" ry="2.9" transform="rotate(-24 6.8 18.8)"/><ellipse cx="17.2" cy="16.8" rx="3.9" ry="2.9" transform="rotate(-24 17.2 16.8)"/><rect x="9.6" y="5.5" width="1.9" height="13.5" rx=".9"/><rect x="20" y="3.5" width="1.9" height="13.5" rx=".9"/><path d="M9.6 5.5L21.9 3.5V7.6L9.6 9.6Z"/></g>
+        </symbol>
+    </defs>
+</svg>
+
+<div class="viewport">
+    <div class="stage" id="stage" data-theme="menu">
+
+        <!-- Фон -->
+        <div class="bg">
+            <div class="bg-img"></div>
+            <div class="bg-tint"></div>
+            <div class="petals" id="petals"></div>
+            <div class="vignette"></div>
+        </div>
+
+        <!-- 1. Главное меню -->
+        <section id="menu" class="screen active">
+            <div class="floor-shadow" id="shMenu"></div>
+            <div class="menu-hero"></div>
+            <button class="icon-btn fs-corner" id="btnFs" aria-label="fullscreen">⛶</button>
+            <div class="menu-left">
+                <div class="logo">
+                    <span class="logo-1">MELODY</span>
+                    <span class="logo-2">RIOT</span>
+                    <span class="logo-sub" data-i18n="subtitle"></span>
+                </div>
+                <div class="menu-buttons">
+                    <button class="btn primary" id="btnPlay" data-i18n="play"></button>
+                    <button class="btn ghost" id="btnSettings" data-i18n="settings"></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Выбор уровня -->
+        <section id="levels" class="screen">
+            <h2 class="screen-h" data-i18n="selectLevel"></h2>
+            <div class="level-cards" id="levelCards"></div>
+            <button class="btn ghost small back-btn" id="levelsBack" data-i18n="back"></button>
+        </section>
+
+        <!-- 3. Диалог -->
+        <section id="dialogue" class="screen">
+            <div class="d-sprite d-melody" id="dMelody"><div class="d-img" id="dMelodyImg"></div></div>
+            <div class="d-sprite d-enemy enemy-box" id="dEnemy">
+                <div class="silhouette"></div>
+                <div class="enemy-art"></div>
+            </div>
+            <button class="btn ghost small skip-btn" id="dSkip" data-i18n="skip"></button>
+            <div class="dialogue-box" id="dBox" data-side="enemy">
+                <div class="nameplate" id="dName"></div>
+                <div class="d-text" id="dText"></div>
+                <div class="d-hint" id="dHint">▼</div>
+            </div>
+        </section>
+
+        <!-- 4. Игра -->
+        <section id="game" class="screen">
+            <div class="hud">
+                <div class="hud-score"><small data-i18n="score"></small><b id="score">0</b></div>
+                <div class="hud-center">
+                    <div class="hud-title" id="songTitle"></div>
+                    <div class="progress"><i id="progressFill"></i></div>
+                </div>
+                <button class="icon-btn" id="btnPause" aria-label="pause">II</button>
+            </div>
+
+            <div class="floor-shadow" id="shHero"></div>
+            <div class="floor-shadow" id="shEnemy"></div>
+            <div class="hero" id="melodyHero">
+                <div class="sprite-layer on" id="poseA"></div>
+                <div class="sprite-layer" id="poseB"></div>
+            </div>
+
+            <div class="enemy enemy-box" id="gameEnemy">
+                <div class="silhouette"></div>
+                <div class="enemy-art"></div>
+            </div>
+
+            <div class="hp" id="hp">
+                <div class="hp-track"><i id="hpFill"></i></div>
+                <span class="heart">♥</span>
+            </div>
+
+            <div class="board" id="board">
+                <div class="hitline"></div>
+                <div class="combo" id="combo"><b id="comboNum">0</b><small data-i18n="combo"></small></div>
+                <div class="judge" id="judge"></div>
+            </div>
+            <div class="toast" id="toast"></div>
+
+            <div class="overlay" id="pauseOverlay">
+                <div class="panel small">
+                    <h3 data-i18n="pause"></h3>
+                    <button class="btn primary" id="btnResume" data-i18n="resume"></button>
+                    <button class="btn ghost" id="btnQuit" data-i18n="quit"></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Результат -->
+        <section id="result" class="screen">
+            <div class="res-hero"><div class="d-img" id="resHeroImg"></div></div>
+            <div class="panel result-panel" id="resultPanel">
+                <h2 id="resTitle"></h2>
+                <p class="res-sub" id="resSub"></p>
+                <div class="res-main">
+                    <div class="rank" id="resRank">S</div>
+                    <div class="res-stats">
+                        <div><small data-i18n="score"></small><b id="resScore">0</b></div>
+                        <div><small data-i18n="accuracy"></small><b id="resAcc">0%</b></div>
+                        <div><small data-i18n="maxCombo"></small><b id="resCombo">0</b></div>
+                    </div>
+                </div>
+                <div class="res-counts">
+                    <span class="c-perfect"><i data-i18n="perfect"></i> <b id="resPerfect">0</b></span>
+                    <span class="c-good"><i data-i18n="good"></i> <b id="resGood">0</b></span>
+                    <span class="c-miss"><i data-i18n="miss"></i> <b id="resMiss">0</b></span>
+                </div>
+                <div class="res-buttons">
+                    <button class="btn primary" id="resNext" data-i18n="next"></button>
+                    <button class="btn ghost" id="resRetry" data-i18n="retry"></button>
+                    <button class="btn ghost" id="resLevels" data-i18n="toLevels"></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Настройки -->
+        <section id="settings" class="screen">
+            <h2 class="screen-h" data-i18n="settingsTitle"></h2>
+            <div class="panel settings-panel">
+                <div class="set-row">
+                    <label data-i18n="language"></label>
+                    <div class="seg">
+                        <button class="btn" data-lang="ru">РУС</button>
+                        <button class="btn ghost" data-lang="cz">ČES</button>
+                    </div>
+                </div>
+                <div class="set-row">
+                    <label data-i18n="sound"></label>
+                    <button class="btn ghost small" id="btnSound"></button>
+                </div>
+                <div class="set-row">
+                    <label data-i18n="voice"></label>
+                    <button class="btn ghost small" id="btnVoice"></button>
+                </div>
+                <div class="set-row" id="rowVibe">
+                    <label data-i18n="vibration"></label>
+                    <button class="btn ghost small" id="btnVibe"></button>
+                </div>
+                <div class="set-row" id="rowFs">
+                    <label data-i18n="fullscreen"></label>
+                    <button class="btn ghost small" id="btnFsSet"></button>
+                </div>
+                <p class="hint" id="fsHint" data-i18n="fsHint"></p>
+                <div class="set-row">
+                    <label data-i18n="progress"></label>
+                    <button class="btn ghost small danger" id="btnReset"></button>
+                </div>
+            </div>
+            <button class="btn ghost small back-btn" id="settingsBack" data-i18n="back"></button>
+        </section>
+
+    </div>
+</div>
+
+<div class="rotate">
+    <div class="rotate-icon">📱</div>
+    <div data-i18n="rotate"></div>
+</div>
+
+<script src="story.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
